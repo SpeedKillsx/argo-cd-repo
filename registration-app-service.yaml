@@ -2,10 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: registration-app-service
+  labels:
+    app: registration-app-aws
 spec:
   selector:
     app: registration-app-aws
   ports:
   - port: 80
     targetPort: 8080
+
   type: LoadBalancer
