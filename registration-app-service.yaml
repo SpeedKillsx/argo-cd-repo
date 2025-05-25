@@ -7,6 +7,7 @@ metadata:
 spec:
   selector:
     app: registration-app-aws
+    
   ports:
   - port: 80
     targetPort: 8080
