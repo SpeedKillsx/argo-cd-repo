@@ -15,7 +15,7 @@ spec:
       containers:
       - name: registration-app-aws
         image: speedskillsx/registration-app-aws:1.0.0-22
-        ressources:
+        resources:
           limits:
             memory: "256Mi"
             cpu: "500m"
