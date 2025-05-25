@@ -19,6 +19,5 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
-        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
