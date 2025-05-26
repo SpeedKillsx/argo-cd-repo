@@ -39,6 +39,11 @@ pipeline{
                 
                 withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
                   sh """
+                    echo "== Git config =="
+                    git config --list
+                    
+                    echo "== Git remote =="
+                    git remote -v
                     git push origin main
                   """
                 }
