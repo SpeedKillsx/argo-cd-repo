@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh """
                    cat registration-app-deployment.yaml
-                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' registration-app-deployment.yaml
+                   sed -i 's|\(image: speedskillsx/registration-app-aws:\).*|\1'"${IMAGE_TAG}"'|' registration-app-deployment.yaml
                    cat registration-app-deployment.yaml
                 """
             }
