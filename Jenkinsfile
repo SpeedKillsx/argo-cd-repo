@@ -1,75 +1,45 @@
-pipeline{
-    agent {label 'Jenkins-Agent' }
+pipeline {
+    agent { label "Jenkins-Agent" }
     environment {
-        APP_NAME = 'registration-app-aws'
+              APP_NAME = "registration-app-aws"
     }
-    stages{
-        stage("Clean Workspace") {
+
+    stages {
+        stage("Cleanup Workspace") {
             steps {
                 cleanWs()
             }
         }
 
-        stage("Checkout Code") {
-            steps {
-                git branch: 'main', url: 'https://github.com/speedKillsx/argo-cd-repo.git' , credentialsId: 'github'
-            }
+        stage("Checkout from SCM") {
+               steps {
+                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/speedKillsx/argo-cd-repo'
+               }
         }
 
-        stage("Update Deplotment File") {
+        stage("Update the Deployment Tags") {
             steps {
-                script {
-                   sh """cat registration-app-deployment.yaml
-                        sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' registration-app-deployment.yaml
-                        cat registration-app-deployment.yaml
-                   """
-                }
+                sh """
+                   cat registration-app-deployment.yaml
+                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' registration-app-deployment.yaml
+                   cat registration-app-deployment.yaml
+                """
             }
-        }
-
-        stage("Check Git Authentication") {
-            steps {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'github',
-                        usernameVariable: 'GIT_USERNAME',
-                        passwordVariable: 'GIT_PASSWORD'
-                    )]) {
-                        sh """
-                            echo "Testing Git authentication..."
-                            git ls-remote https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git
-                        """
-                    }
-                }
         }
 
         stage("Push the changed deployment file to Git") {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'github',
-            usernameVariable: 'GIT_USERNAME',
-            passwordVariable: 'GIT_PASSWORD'
-        )]) {
-            sh '''
-                echo "Configuring Git..."
-                git config --global user.name "$GIT_USERNAME"
-                git config --global user.email "amayaslabchri88@gmail.com"
-
-                echo "Setting remote URL with credentials..."
-                git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git
-
-                echo "Committing changes..."
-                git add registration-app-deployment.yaml
-                git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
-
-                echo "Pushing to GitHub..."
-                git push origin main
-            '''
+            steps {
+                sh """
+                   git config --global user.name "speedKillsx"
+                   git config --global user.email "amayaslabchri88@gmail.com"
+                   git add registration-app-deployment.yaml
+                   git commit -m "Updated Deployment Manifest"
+                """
+                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                  sh "git push https://github.com/speedKillsx/argo-cd-repo main"
+                }
+            }
         }
-    }
-}
-
-
-
-        
+      
     }
 }
