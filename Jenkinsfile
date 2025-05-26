@@ -43,22 +43,31 @@ pipeline{
         }
 
         stage("Push the changed deployment file to Git") {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'github',              // ID de vos identifiants Jenkins (GitHub PAT)
-                    usernameVariable: 'GIT_USERNAME',
-                    passwordVariable: 'GIT_PASSWORD'
-                )]) {
-                    sh '''
-                        git config --global user.name "SpeedsKillsx"
-                        git config --global user.email "amayaslabchri88@gmail.com"
-                        git add registration-app-deployment.yaml
-                        git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git main
-                    '''
-                }
-            }
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github',
+            usernameVariable: 'GIT_USERNAME',
+            passwordVariable: 'GIT_PASSWORD'
+        )]) {
+            sh '''
+                echo "Configuring Git..."
+                git config --global user.name "$GIT_USERNAME"
+                git config --global user.email "amayaslabchri88@gmail.com"
+
+                echo "Setting remote URL with credentials..."
+                git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git
+
+                echo "Committing changes..."
+                git add registration-app-deployment.yaml
+                git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
+
+                echo "Pushing to GitHub..."
+                git push origin main
+            '''
         }
+    }
+}
+
 
 
         
