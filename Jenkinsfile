@@ -12,13 +12,6 @@ pipeline {
 
     stages {
         stage('Check TAG_NAME') {
-        
-            when {
-                sh """
-                echo "TAG_NAME: ${params.TAG_NAME}"
-            """
-                expression { return params.TAG_NAME?.trim() }
-            }
             when {
                 expression {
                     return !params.TAG_NAME?.trim()
@@ -26,6 +19,7 @@ pipeline {
             }
             steps {
                 echo "TAG_NAME is empty. Skipping pipeline execution."
+                
                 script {
                     currentBuild.result = 'NOT_BUILT'
                     error("Stopping pipeline: TAG_NAME is not defined.")
