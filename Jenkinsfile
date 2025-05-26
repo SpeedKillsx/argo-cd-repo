@@ -11,7 +11,7 @@ pipeline {
         stage('Check TAG_NAME') {
             when {
                 expression {
-                    return !params.TAG_NAME?.trim()
+                    return !IMAGE_TAG?.trim()
                 }
             }
             steps {
