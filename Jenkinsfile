@@ -11,6 +11,18 @@ pipeline {
                 cleanWs()
             }
         }
+        stage("Test SSH connection to GitHub") {
+    steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+            sh """
+                eval \$(ssh-agent -s)
+                ssh-add \$SSH_KEY
+                ssh-keyscan github.com >> ~/.ssh/known_hosts
+                ssh -T git@github.com || true
+            """
+        }
+    }
+}
 
         stage("Checkout from SCM") {
             steps {
