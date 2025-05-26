@@ -1,13 +1,10 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
 
-    parameters {
-        string(name: 'TAG_NAME', defaultValue: '', description: 'Tag to deploy')
-    }
+    
 
     environment {
         APP_NAME = 'registration-app-aws'
-        IMAGE_TAG = "${params.TAG_NAME}"
     }
 
     stages {
@@ -54,7 +51,7 @@ pipeline {
 
         stage("Checkout from SCM") {
             when {
-                expression { return params.TAG_NAME?.trim() }
+                expression { return IMAGE_TAG?.trim() }
             }
             steps {
                 git branch: 'main', credentialsId: 'github-ssh', url: 'git@github.com:SpeedKillsx/argo-cd-repo.git'
@@ -63,7 +60,7 @@ pipeline {
 
         stage("Update the Deployment Tags") {
             when {
-                expression { return params.TAG_NAME?.trim() }
+                expression { return IMAGE_TAG?.trim() }
             }
             steps {
                 sh """
@@ -76,7 +73,7 @@ pipeline {
 
         stage("Push to GitHub via SSH") {
             when {
-                expression { return params.TAG_NAME?.trim() }
+                expression { return IMAGE_TAG?.trim() }
             }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
