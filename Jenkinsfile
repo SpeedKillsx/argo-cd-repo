@@ -33,12 +33,9 @@ pipeline {
         stage("Update the Deployment Tags") {
             steps {
                 sh """
-                    echo "=== Before update ==="
-                    cat registration-app-deployment.yaml
-
-                    sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' registration-app-deployment.yaml
-                    echo "=== After update ==="
-                    cat registration-app-deployment.yaml
+                   cat deployment.yaml
+                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                   cat deployment.yaml
                 """
             }
         }
