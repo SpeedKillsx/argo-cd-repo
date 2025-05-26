@@ -1,5 +1,6 @@
-pipeline{
-    agent {label 'Jenkins-Agent' }
+pipeline {
+    agent { label 'Jenkins-Agent' }
+
     environment {
         APP_NAME = 'registration-app-aws'
     }
@@ -12,35 +13,42 @@ pipeline{
         }
 
         stage("Checkout from SCM") {
-               steps {
-                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/SpeedKillsx/argo-cd-repo'
-               }
+            steps {
+                git branch: 'main', credentialsId: 'github-ssh', url: 'git@github.com:SpeedKillsx/argo-cd-repo.git'
+            }
         }
 
         stage("Update the Deployment Tags") {
             steps {
                 sh """
-                   cat registration-app-deployment.yaml
-                   sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' registration-app-deployment.yaml
-                   cat registration-app-deployment.yaml
+                    echo "=== Before update ==="
+                    cat registration-app-deployment.yaml
+
+                    sed -i 's|${APP_NAME}.*|${APP_NAME}:${IMAGE_TAG}|g' registration-app-deployment.yaml
+
+                    echo "=== After update ==="
+                    cat registration-app-deployment.yaml
                 """
             }
         }
 
-        stage("Push the changed deployment file to Git") {
+        stage("Push to GitHub via SSH") {
             steps {
-                sh """
-                    git config --global user.name "SpeedKillsx"
-                    git config --global user.email "amayaslabchri88@gmail.com"
-                    git add registration-app-deployment.yaml
-                    git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
-                """
-                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh "git push git@github.com:SpeedKillsx/argo-cd-repo.git main"
-                        }
-            }
-}
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        eval \$(ssh-agent -s)
+                        ssh-add \$SSH_KEY
+                        ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      
+                        git config --global user.name "SpeedKillsx"
+                        git config --global user.email "amayaslabchri88@gmail.com"
+
+                        git add registration-app-deployment.yaml
+                        git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
+                        git push git@github.com:SpeedKillsx/argo-cd-repo.git main
+                    """
+                }
+            }
+        }
     }
 }
