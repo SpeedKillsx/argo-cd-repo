@@ -8,18 +8,19 @@ pipeline {
     }
 
     stages {
-        stage('Check TAG_NAME') {
+        stage('Check IMAGE_TAG') {
             when {
                 expression {
                     return !IMAGE_TAG?.trim()
                 }
             }
             steps {
-                echo "TAG_NAME is empty. Skipping pipeline execution."
+                echo "IMAGE_TAG is empty. Skipping pipeline execution."
                 
                 script {
+                    sh "${IMAGE_TAG} is not defined. Stopping pipeline execution."
                     currentBuild.result = 'NOT_BUILT'
-                    error("Stopping pipeline: TAG_NAME is not defined.")
+                    error("Stopping pipeline: IMAGE_TAG is not defined.")
                 }
             }
         }
