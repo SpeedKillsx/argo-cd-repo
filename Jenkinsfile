@@ -1,8 +1,19 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
 
+    parameters {
+        string(name: 'TAG_NAME', defaultValue: '', description: 'Tag to deploy')
+    }
+
     environment {
         APP_NAME = 'registration-app-aws'
+        IMAGE_TAG = "${params.TAG_NAME}"
+    }
+
+    when {
+        expression {
+            return params.TAG_NAME?.trim()
+        }
     }
 
     stages {
