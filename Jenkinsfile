@@ -13,7 +13,7 @@ pipeline{
 
         stage("Checkout from SCM") {
                steps {
-                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/speedKillsx/argo-cd-repo'
+                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/SpeedKillsx/argo-cd-repo'
                }
         }
 
@@ -36,7 +36,7 @@ pipeline{
                    git commit -m "Updated Deployment Manifest"
                 """
                 withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/speedKillsx/argo-cd-repo main"
+                  sh "git push https://github.com/SpeedKillsx/argo-cd-repo main"
                 }
             }
         }
