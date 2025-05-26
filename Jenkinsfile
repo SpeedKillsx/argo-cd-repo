@@ -10,38 +10,60 @@ pipeline {
         IMAGE_TAG = "${params.TAG_NAME}"
     }
 
-    when {
-        expression {
-            return params.TAG_NAME?.trim()
-        }
-    }
-
     stages {
+        stage('Check TAG_NAME') {
+            when {
+                expression {
+                    return !params.TAG_NAME?.trim()
+                }
+            }
+            steps {
+                echo "TAG_NAME is empty. Skipping pipeline execution."
+                script {
+                    currentBuild.result = 'NOT_BUILT'
+                    error("Stopping pipeline: TAG_NAME is not defined.")
+                }
+            }
+        }
+
         stage("Cleanup Workspace") {
+            when {
+                expression { return params.TAG_NAME?.trim() }
+            }
             steps {
                 cleanWs()
             }
         }
+
         stage("Test SSH connection to GitHub") {
-    steps {
-        withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-            sh """
-                eval \$(ssh-agent -s)
-                ssh-add \$SSH_KEY
-                ssh-keyscan github.com >> ~/.ssh/known_hosts
-                ssh -T git@github.com || true
-            """
+            when {
+                expression { return params.TAG_NAME?.trim() }
+            }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        eval \$(ssh-agent -s)
+                        ssh-add \$SSH_KEY
+                        ssh-keyscan github.com >> ~/.ssh/known_hosts
+                        ssh -T git@github.com || true
+                    """
+                }
+            }
         }
-    }
-}
 
         stage("Checkout from SCM") {
+            when {
+                expression { return params.TAG_NAME?.trim() }
+            }
             steps {
                 git branch: 'main', credentialsId: 'github-ssh', url: 'git@github.com:SpeedKillsx/argo-cd-repo.git'
             }
         }
 
         stage("Update the Deployment Tags") {
+            when {
+                expression { return params.TAG_NAME?.trim() }
+            }
             steps {
                 sh """
                    cat registration-app-deployment.yaml
@@ -52,6 +74,9 @@ pipeline {
         }
 
         stage("Push to GitHub via SSH") {
+            when {
+                expression { return params.TAG_NAME?.trim() }
+            }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
                     sh """
