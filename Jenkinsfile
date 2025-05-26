@@ -26,7 +26,7 @@ pipeline {
 
         stage("Cleanup Workspace") {
             when {
-                expression { return params.TAG_NAME?.trim() }
+                expression { return IMAGE_TAG?.trim() }
             }
             steps {
                 cleanWs()
@@ -35,7 +35,7 @@ pipeline {
 
         stage("Test SSH connection to GitHub") {
             when {
-                expression { return params.TAG_NAME?.trim() }
+                expression { return IMAGE_TAG?.trim() }
             }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
