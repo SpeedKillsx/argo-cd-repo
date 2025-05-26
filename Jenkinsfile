@@ -42,19 +42,25 @@ pipeline{
                 }
         }
 
-
         stage("Push the changed deployment file to Git") {
             steps {
-                sh """
-                   git config --global user.name "SpeedsKillsx"
-                   git config --global user.email "amayaslabchri88@gmail.com"
-                   git add registration-app-deployment.yaml
-                   git commit -m "Updated Deployment Manifest"
-                """
-                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/speedKillsx/argo-cd-repo main"
+                withCredentials([usernamePassword(
+                    credentialsId: 'github',              // ID de vos identifiants Jenkins (GitHub PAT)
+                    usernameVariable: 'GIT_USERNAME',
+                    passwordVariable: 'GIT_PASSWORD'
+                )]) {
+                    sh '''
+                        git config --global user.name "SpeedsKillsx"
+                        git config --global user.email "amayaslabchri88@gmail.com"
+                        git add registration-app-deployment.yaml
+                        git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git main
+                    '''
                 }
             }
         }
+
+
+        
     }
 }
