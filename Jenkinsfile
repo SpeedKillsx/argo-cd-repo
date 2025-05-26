@@ -27,10 +27,26 @@ pipeline{
             }
         }
 
+        stage("Check Git Authentication") {
+            steps {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'github',
+                        usernameVariable: 'GIT_USERNAME',
+                        passwordVariable: 'GIT_PASSWORD'
+                    )]) {
+                        sh """
+                            echo "Testing Git authentication..."
+                            git ls-remote https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/speedKillsx/argo-cd-repo.git
+                        """
+                    }
+                }
+        }
+
+
         stage("Push the changed deployment file to Git") {
             steps {
                 sh """
-                   git config --global user.name "SpeedKillsx"
+                   git config --global user.name "SpeedsKillsx"
                    git config --global user.email "amayaslabchri88@gmail.com"
                    git add registration-app-deployment.yaml
                    git commit -m "Updated Deployment Manifest"
