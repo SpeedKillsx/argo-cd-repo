@@ -38,7 +38,9 @@ pipeline{
                 """
                 
                 withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/SpeedKillsx/argo-cd-repo main"
+                  sh """
+                    git push origin main
+                  """
                 }
             }
         }
