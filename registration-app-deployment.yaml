@@ -6,15 +6,15 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: registration-app-aws:1.0.0-34
+      app: registration-app-aws:
   template:
     metadata:
       labels:
-        app: registration-app-aws:1.0.0-34
+        app: registration-app-aws:
     spec:
       containers:
-      - name: registration-app-aws:1.0.0-34
-        image: speedskillsx/registration-app-aws:1.0.0-34
+      - name: registration-app-aws:
+        image: speedskillsx/registration-app-aws:
         resources:
           limits:
             memory: "256Mi"
