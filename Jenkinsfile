@@ -54,8 +54,8 @@ pipeline {
                         git config --global user.name "SpeedKillsx"
                         git config --global user.email "amayaslabchri88@gmail.com"
 
-                        git add registration-app-deployment.yaml
-                        git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
+                        git add .
+                        git commit -m "Updated Deployment Manifest for tag : ${IMAGE_TAG}" || echo "No changes to commit"
                         git push git@github.com:SpeedKillsx/argo-cd-repo.git main
                     """
                 }
