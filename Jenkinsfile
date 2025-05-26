@@ -13,10 +13,12 @@ pipeline{
 
         stage("Checkout from SCM") {
                steps {
-                dir("argo-cd-repo") {
-                    checkout scm
-                   git branch: 'main', credentialsId: 'github', url: 'https://github.com/SpeedKillsx/argo-cd-repo'
+                    dir("argo-cd-repo") {
+                        checkout scm
+                    git branch: 'main', credentialsId: 'github', url: 'https://github.com/SpeedKillsx/argo-cd-repo'
+                }
                }
+               
         }
 
         stage("Update the Deployment Tags") {
