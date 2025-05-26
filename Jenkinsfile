@@ -28,17 +28,17 @@ pipeline{
         }
 
         stage("Push the changed deployment file to Git") {
-    steps {
-        sh """
-            git config --global user.name "SpeedKillsx"
-            git config --global user.email "amayaslabchri88@gmail.com"
-            git add registration-app-deployment.yaml
-            git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
-        """
-         withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/SpeedKillsx/argo-cd-repo.git main"
-                }
-    }
+            steps {
+                sh """
+                    git config --global user.name "SpeedKillsx"
+                    git config --global user.email "amayaslabchri88@gmail.com"
+                    git add registration-app-deployment.yaml
+                    git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
+                """
+                // withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                //         sh "git push https://github.com/SpeedKillsx/argo-cd-repo.git main"
+                //         }
+            }
 }
 
       
