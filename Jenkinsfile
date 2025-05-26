@@ -12,10 +12,11 @@ pipeline {
 
     stages {
         stage('Check TAG_NAME') {
-            sh """
+        
+            when {
+                sh """
                 echo "TAG_NAME: ${params.TAG_NAME}"
             """
-            when {
                 expression { return params.TAG_NAME?.trim() }
             }
             when {
